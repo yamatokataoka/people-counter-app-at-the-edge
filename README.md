@@ -33,8 +33,8 @@ You will choose a model to use and convert it with the Model Optimizer.
 *   Npm v3.10.10
 *   CMake
 *   MQTT Mosca server
-  
-        
+
+
 ## Setup
 
 ### Install Intel® Distribution of OpenVINO™ toolkit
@@ -57,10 +57,10 @@ Utilize the classroom workspace, or refer to the relevant instructions for your 
 
 There are three components that need to be running in separate terminals for this application to work:
 
--   MQTT Mosca server 
+-   MQTT Mosca server
 -   Node.js* Web server
 -   FFmpeg server
-     
+
 From the main directory:
 
 * For MQTT/Mosca server:
@@ -76,7 +76,7 @@ From the main directory:
   ```
   **Note:** If any configuration errors occur in mosca server or Web server while using **npm install**, use the below commands:
    ```
-   sudo npm install npm -g 
+   sudo npm install npm -g
    rm -rf node_modules
    npm cache clean
    npm config set registry "http://registry.npmjs.org"
@@ -90,6 +90,42 @@ It is up to you to decide on what model to use for the application. You need to 
 Note that you may need to do additional processing of the output to handle incorrect detections, such as adjusting confidence threshold or accounting for 1-2 frames where the model fails to see a person already counted and would otherwise double count.
 
 **If you are otherwise unable to find a suitable model after attempting and successfully converting at least three other models**, you can document in your write-up what the models were, how you converted them, and why they failed, and then utilize any of the Intel® Pre-Trained Models that may perform better.
+
+#### example to convert model to IR
+
+You can find a model on [the Object Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md).
+
+then download
+
+```
+wget http://download.tensorflow.org/models/object_detection/ssd_inception_v2_coco_2018_01_28.tar.gz
+```
+
+then extract it
+
+```
+tar -xvf ssd_inception_v2_coco_2018_01_28.tar.gz
+```
+
+you convert the model to Intermediate Representation.
+
+```
+python3 /opt/intel/openvino/deployment_tools/model_optimizer/mo_tf.py \
+  --input_model=/home/workspace/ssd_inception_v2_coco_2018_01_28/frozen_inference_graph.pb \
+  --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/ssd_v2_support.json \
+  --tensorflow_object_detection_api_pipeline_config /home/workspace/ssd_inception_v2_coco_2018_01_28/pipeline.config \
+  --reverse_input_channels
+```
+
+As you see at the end of the log, the TensorFlow Model sucessfully converts the Intermediate Representation (IR) model for OpenVINO Toolkit.
+
+```
+# omitted ...
+[ SUCCESS ] Generated IR model.
+[ SUCCESS ] XML file: /home/workspace/./frozen_inference_graph.xml
+[ SUCCESS ] BIN file: /home/workspace/./frozen_inference_graph.bin
+[ SUCCESS ] Total execution time: 62.61 seconds.
+```
 
 ## Run the application
 
@@ -129,7 +165,7 @@ sudo ffserver -f ./ffmpeg/server.conf
 
 ### Step 4 - Run the code
 
-Open a new terminal to run the code. 
+Open a new terminal to run the code.
 
 #### Setup the environment
 
@@ -142,7 +178,7 @@ You should also be able to run the application with Python 3.6, although newer v
 
 #### Running on the CPU
 
-When running Intel® Distribution of OpenVINO™ toolkit Python applications on the CPU, the CPU extension library is required. This can be found at: 
+When running Intel® Distribution of OpenVINO™ toolkit Python applications on the CPU, the CPU extension library is required. This can be found at:
 
 ```
 /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/
@@ -192,7 +228,7 @@ to run on your local machine, you will need to change the below file:
 webservice/ui/src/constants/constants.js
 ```
 
-The `CAMERA_FEED_SERVER` and `MQTT_SERVER` both use the workspace configuration. 
+The `CAMERA_FEED_SERVER` and `MQTT_SERVER` both use the workspace configuration.
 You can change each of these as follows:
 
 ```
