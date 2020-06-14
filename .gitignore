@@ -1,6 +1,14 @@
+# env
 env.sh
 .ssh/
-*.tar.gz
+
+# python
 .ipynb_checkpoints
-.workspace-config.json
 .tempfile
+__pycache__
+
+# ffmpeg
+fac.ffm
+
+*.tar.gz
+.workspace-config.json
