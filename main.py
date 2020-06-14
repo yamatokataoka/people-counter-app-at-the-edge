@@ -40,6 +40,8 @@ MQTT_HOST = IPADDRESS
 MQTT_PORT = 3001
 MQTT_KEEPALIVE_INTERVAL = 60
 
+# logging
+# log.basicConfig(level=log.DEBUG)
 
 def build_argparser():
     """
@@ -91,6 +93,10 @@ def infer_on_stream(args, client):
     prob_threshold = args.prob_threshold
 
     ### TODO: Load the model through `infer_network` ###
+    model = args.model
+    device = args.device
+    cpu_extension = args.cpu_extension
+    infer_network.load_model(model, device, cpu_extension)
 
     ### TODO: Handle the input stream ###
 

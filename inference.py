@@ -43,12 +43,35 @@ class Network:
         self.exec_network = None
         self.infer_request = None
 
-    def load_model(self):
+    def load_model(self, model, device, cpu_extension):
+        ### Load the Inference Engine API
+        self.plugin = IECore()
+
         ### TODO: Load the model ###
+        model_xml = model
+        model_bin = os.path.splitext(model_xml)[0] + ".bin"
+        self.network = IENetwork(model=model_xml, weights=model_bin)
+
+        # Add a CPU extension, if applicable
+        if cpu_extension and "CPU" in device:
+            self.plugin.add_extension(cpu_extension, device)
+
         ### TODO: Check for supported layers ###
-        ### TODO: Add any necessary extensions ###
-        ### TODO: Return the loaded inference plugin ###
-        ### Note: You may need to update the function parameters. ###
+        supported_layers = self.plugin.query_network(network=self.network, device_name=device)
+
+        ### Check for any unsupported layers, and let the user
+        ### know if anything is missing. Exit the program, if so.
+        unsupported_layers = [l for l in self.network.layers.keys() if l not in supported_layers]
+        if len(unsupported_layers) != 0:
+            log.warn("Unsupported layers found: {}".format(unsupported_layers))
+            log.warn("Check whether extensions are available to add to IECore.")
+            exit(1)
+
+        ### Load the model network into a self.plugin variable
+        self.exec_network = self.plugin.load_network(self.network, device)
+
+        log.info("IR successfully loaded into Inference Engine.")
+
         return
 
     def get_input_shape(self):
