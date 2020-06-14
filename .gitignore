@@ -1,0 +1,6 @@
+env.sh
+.ssh/
+*.tar.gz
+.ipynb_checkpoints
+.workspace-config.json
+.tempfile
