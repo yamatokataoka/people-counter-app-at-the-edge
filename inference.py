@@ -41,7 +41,6 @@ class Network:
         self.input_blob = None
         self.output_blob = None
         self.exec_network = None
-        self.infer_request = None
 
     def load_model(self, model, device, cpu_extension):
         ### Load the Inference Engine API
