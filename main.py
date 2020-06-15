@@ -117,6 +117,12 @@ def infer_on_stream(args, client):
         key_pressed = cv2.waitKey(60)
 
         ### TODO: Pre-process the image as needed ###
+        try:
+            p_frame = cv2.resize(frame, (network_input_shape[3], network_input_shape[2]))
+            p_frame = p_frame.transpose((2,0,1))
+            p_frame = p_frame.reshape(1, *p_frame.shape)
+        except Exception as e:
+            break
 
         ### TODO: Start asynchronous inference for specified request ###
 
