@@ -111,6 +111,10 @@ def infer_on_stream(args, client):
     while cap.isOpened():
 
         ### TODO: Read from the video capture ###
+        flag, frame = cap.read()
+        if not flag:
+            break
+        key_pressed = cv2.waitKey(60)
 
         ### TODO: Pre-process the image as needed ###
 
