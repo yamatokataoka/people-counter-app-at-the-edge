@@ -131,6 +131,9 @@ def infer_on_stream(args, client):
         if infer_network.wait() == 0:
 
             ### TODO: Get the results of the inference request ###
+            result = infer_network.extract_output()
+
+            output_frame = draw_boxes(frame, result, prob_threshold, width, height)
 
             ### TODO: Extract any desired stats from the results ###
 
@@ -143,6 +146,21 @@ def infer_on_stream(args, client):
 
         ### TODO: Write an output image if `single_image_mode` ###
 
+def draw_boxes(frame, result, prob_threshold, width, height):
+    '''
+    Draw bounding boxes onto the frame.
+    '''
+    for box in result[0][0]:
+        confidence = box[2]
+        if confidence >= prob_threshold:
+            xmin = int(box[3] * width)
+            ymin = int(box[4] * height)
+            xmax = int(box[5] * width)
+            ymax = int(box[6] * height)
+
+            # Draw the detected bounding boxes
+            cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 255, 255), 2)
+    return frame
 
 def main():
     """
