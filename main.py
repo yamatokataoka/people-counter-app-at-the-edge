@@ -99,6 +99,13 @@ def infer_on_stream(args, client):
     infer_network.load_model(model, device, cpu_extension)
 
     ### TODO: Handle the input stream ###
+    # Get and open video capture
+    cap = cv2.VideoCapture(args.input)
+    cap.open(args.input)
+
+    # Grab the shape of the input
+    width = int(cap.get(3))
+    height = int(cap.get(4))
 
     ### TODO: Loop until stream is over ###
 
