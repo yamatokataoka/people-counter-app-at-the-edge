@@ -30,7 +30,7 @@ from openvino.inference_engine import IENetwork, IECore
 
 class Network:
     """
-    Load and configure inference plugins for the specified target devices 
+    Load and configure inference plugins for the specified target devices
     and performs synchronous and asynchronous modes for the specified infer requests.
     """
 
@@ -72,11 +72,15 @@ class Network:
 
         log.info("IR successfully loaded into Inference Engine.")
 
+        # Get the input and output layer
+        self.input_blob = next(iter(self.network.inputs))
+        self.output_blob = next(iter(self.network.outputs))
+
         return
 
     def get_input_shape(self):
         ### TODO: Return the shape of the input layer ###
-        return
+        return self.network.inputs[self.input_blob].shape
 
     def exec_net(self):
         ### TODO: Start an asynchronous request ###
@@ -92,5 +96,4 @@ class Network:
 
     def get_output(self):
         ### TODO: Extract and return the output results
-        ### Note: You may need to update the function parameters. ###
-        return
+        return self.exec_network.requests[0].outputs[self.output_blob]
