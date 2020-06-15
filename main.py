@@ -125,6 +125,7 @@ def infer_on_stream(args, client):
             break
 
         ### TODO: Start asynchronous inference for specified request ###
+        infer_network.exec_net(p_frame)
 
         ### TODO: Wait for the result ###
 
