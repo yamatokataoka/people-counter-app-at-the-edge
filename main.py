@@ -108,6 +108,7 @@ def infer_on_stream(args, client):
     height = int(cap.get(4))
 
     ### TODO: Loop until stream is over ###
+    while cap.isOpened():
 
         ### TODO: Read from the video capture ###
 
