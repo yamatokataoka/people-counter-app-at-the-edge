@@ -84,8 +84,7 @@ class Network:
 
     def exec_net(self):
         ### TODO: Start an asynchronous request ###
-        ### TODO: Return any necessary information ###
-        ### Note: You may need to update the function parameters. ###
+        self.exec_network.start_async(request_id=0, inputs={self.input_blob: image})
         return
 
     def wait(self):
