@@ -100,6 +100,11 @@ def infer_on_stream(args, client):
 
     network_input_shape = infer_network.get_input_shape()
 
+    ### Handle image or video
+    image_flag = False
+    if args.input.endswith('.jpg') or args.input.endswith('.bmp'):
+       image_flag = True
+
     ### TODO: Handle the input stream ###
     # Get and open video capture
     cap = cv2.VideoCapture(args.input)
@@ -177,7 +182,7 @@ def infer_on_stream(args, client):
 
         ### Write an output image if `single_image_mode` ###
         if image_flag:
-            cv2.imwrite('output.jpg', frame)
+            cv2.imwrite('output.jpg', output_frame)
 
         ### Close the stream and any windows at the end of the application
         cap.release()
