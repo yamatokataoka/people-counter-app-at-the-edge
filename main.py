@@ -184,12 +184,12 @@ def infer_on_stream(args, client):
         if image_flag:
             cv2.imwrite('output.jpg', output_frame)
 
-        ### Close the stream and any windows at the end of the application
-        cap.release()
-        cv2.destroyAllWindows()
+    ### Close the stream and any windows at the end of the application
+    cap.release()
+    cv2.destroyAllWindows()
 
-        # Disconnect from MQTT
-        client.disconnect()
+    # Disconnect from MQTT
+    client.disconnect()
 
 def draw_boxes(frame, result, prob_threshold, width, height):
     '''
