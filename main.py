@@ -167,9 +167,25 @@ def infer_on_stream(args, client):
 
             previous_count = current_count
 
-        ### TODO: Send the frame to the FFMPEG server ###
+        ### Send the frame to the FFMPEG server ###
+        if output_frame:
+            sys.stdout.buffer.write(output_frame)
+            sys.stdout.flush()
 
-        ### TODO: Write an output image if `single_image_mode` ###
+        # Break if escape key pressed
+        if key_pressed == 27:
+            break
+
+        ### Write an output image if `single_image_mode` ###
+        if image_flag:
+            cv2.imwrite('output.jpg', frame)
+
+        ### Close the stream and any windows at the end of the application
+        cap.release()
+        cv2.destroyAllWindows()
+
+        # Disconnect from MQTT
+        client.disconnect()
 
 def draw_boxes(frame, result, prob_threshold, width, height):
     '''
