@@ -168,9 +168,8 @@ def infer_on_stream(args, client):
             previous_count = current_count
 
         ### Send the frame to the FFMPEG server ###
-        if output_frame:
-            sys.stdout.buffer.write(output_frame)
-            sys.stdout.flush()
+        sys.stdout.buffer.write(output_frame)
+        sys.stdout.flush()
 
         # Break if escape key pressed
         if key_pressed == 27:
