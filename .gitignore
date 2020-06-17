@@ -12,3 +12,6 @@ fac.ffm
 
 *.tar.gz
 .workspace-config.json
+
+# intel
+/intel
