@@ -98,6 +98,13 @@ def infer_on_stream(args, client):
     cpu_extension = args.cpu_extension
     infer_network.load_model(model, device, cpu_extension)
 
+    network_input_shape = infer_network.get_input_shape()
+
+    ### Handle image or video
+    image_flag = False
+    if args.input.endswith('.jpg') or args.input.endswith('.bmp'):
+       image_flag = True
+
     ### TODO: Handle the input stream ###
     # Get and open video capture
     cap = cv2.VideoCapture(args.input)
@@ -107,8 +114,16 @@ def infer_on_stream(args, client):
     width = int(cap.get(3))
     height = int(cap.get(4))
 
+    # for publishing information
+    total_count = 0
+    previous_count = 0
+    duration = 0
+    start_time = 0
+
     ### TODO: Loop until stream is over ###
     while cap.isOpened():
+
+        current_count = 0
 
         ### TODO: Read from the video capture ###
         flag, frame = cap.read()
@@ -122,6 +137,7 @@ def infer_on_stream(args, client):
             p_frame = p_frame.transpose((2,0,1))
             p_frame = p_frame.reshape(1, *p_frame.shape)
         except Exception as e:
+            log.error("exception: {}".format(e))
             break
 
         ### TODO: Start asynchronous inference for specified request ###
@@ -131,20 +147,49 @@ def infer_on_stream(args, client):
         if infer_network.wait() == 0:
 
             ### TODO: Get the results of the inference request ###
-            result = infer_network.extract_output()
+            result = infer_network.get_output()
 
             output_frame = draw_boxes(frame, result, prob_threshold, width, height)
 
-            ### TODO: Extract any desired stats from the results ###
-
-            ### TODO: Calculate and send relevant information on ###
-            ### current_count, total_count and duration to the MQTT server ###
             ### Topic "person": keys of "count" and "total" ###
             ### Topic "person/duration": key of "duration" ###
+            for box in result[0][0]:
+                confidence = box[2]
+                if confidence >= prob_threshold and box[1] == 1:
+                    current_count += 1
+            client.publish("person", json.dumps({"count": current_count}))
+            log.info("current_count at {}: {}".format(time.time(), current_count))
 
-        ### TODO: Send the frame to the FFMPEG server ###
+            if current_count > previous_count:
+                start_time = time.time()
+                addition = current_count - previous_count
+                total_count += addition
+                log.info("total_count at {}: {}".format(time.time(),total_count))
+                client.publish("person", json.dumps({"total": total_count}))
+            elif current_count < previous_count:
+                duration = int(time.time() - start_time)
+                client.publish("person/duration", json.dumps({"duration": duration}))
 
-        ### TODO: Write an output image if `single_image_mode` ###
+            previous_count = current_count
+
+        ### Send the frame to the FFMPEG server ###
+        sys.stdout.buffer.write(output_frame)
+        sys.stdout.flush()
+
+        # Break if escape key pressed
+        if key_pressed == 27:
+            break
+
+        ### Write an output image if `single_image_mode` ###
+        if image_flag:
+            cv2.imwrite('output.jpg', output_frame)
+
+    ### Close the stream and any windows at the end of the application
+    cap.release()
+    cv2.destroyAllWindows()
+
+    # Disconnect from MQTT
+    client.disconnect()
 
 def draw_boxes(frame, result, prob_threshold, width, height):
     '''
