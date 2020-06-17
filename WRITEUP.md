@@ -1,59 +1,50 @@
 # Project Write-Up
 
-You can use this document as a template for providing your project write-up. However, if you
-have a different format you prefer, feel free to use it as long as you answer all required
-questions.
-
 ## Explaining Custom Layers
 
-The process behind converting custom layers involves...
+The custom layer is defined as a layer, not in the [list of supported layers](https://docs.openvinotoolkit.org/2019_R3/_docs_MO_DG_prepare_model_Supported_Frameworks_Layers.html)
 
-Some of the potential reasons for handling custom layers are...
+There are several options to convert custom layers regarding the original model framework you intend to use.
+
+For example,
+
+TensorFlow:
+* register the custom layers as extensions to the Model Optimizer.
+* replace the unsupported subgraph with a different subgraph.
+* offload the computation of the subgraph back to TensorFlow during inference
+
+Caffe:
+* register the custom layers as extensions to the Model Optimizer.
+* register the layers as Custom, then use Caffe to calculate the output shape of the layer.
+
+The potential reason for handling custom layers is OpenVINO™ toolkit cannot optimize the model and run inference. The Inference Engine only considers the layer to be unsupported and reports an error.
 
 ## Comparing Model Performance
 
-My method(s) to compare models before and after conversion to Intermediate Representations
-were...
+My method to compare models before and after conversion to Intermediate Representations
+were running inference both on the OpenVINO toolkit and Tensorflow framework and measuring their performance (accuracy, size, speed, CPU overhead).
 
-The difference between model accuracy pre- and post-conversion was...
+The difference between model accuracy pre- and post-conversion should be the same for accuracy unless you quantize it theoretically.
 
-The size of the model pre- and post-conversion was...
+The size of the model pre- and post-conversion was squashed about 2 MB comparing .pb (Tensorflow) and .bin (IR).
 
-The inference time of the model pre- and post-conversion was...
+The inference time of the model pre- and post-conversion was reduced by about 103 seconds, using [comparing_model_performance.py](./comparing_model_performance.py)
+
+|            | size (MB) | inference time (s) |
+|------------|-----------|--------------------|
+| OpenVINO   | 96        | 222                |
+| Tensorflow | 98        | 325                |
 
 ## Assess Model Use Cases
 
-Some of the potential use cases of the people counter app are...
+Some of the potential use cases of the people counter app is visitor analytics for the physical world using information like the number of visitors per store and time spent on certain places.
 
-Each of these use cases would be useful because...
+For example, in Airports, we can understand the traffic and track crowds movement from security check to plane embarkment.
+
+These censoring allows more efficient operations, staff allocation, and increase passenger time at Duty-Free.
 
 ## Assess Effects on End User Needs
 
-Lighting, model accuracy, and camera focal length/image size have different effects on a
-deployed edge model. The potential effects of each of these are as follows...
+Lighting, model accuracy, and camera focal length/image size have different effects on a deployed edge model. The potential effects of each of these are model accuracy.
 
-## Model Research
-
-[This heading is only required if a suitable model was not found after trying out at least three
-different models. However, you may also use this heading to detail how you converted 
-a successful model.]
-
-In investigating potential people counter models, I tried each of the following three models:
-
-- Model 1: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
-  
-- Model 2: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
-
-- Model 3: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
+Changing environment parameters for an edge model like lack of lighting or camera performance leads to decrease model accuracy because input image could be far away from trained images in the first place. Like so, the insufficient input image size will decrease the model accuracy.
