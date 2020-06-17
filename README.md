@@ -271,3 +271,27 @@ CAMERA_FEED_SERVER: "http://localhost:3004"
 ...
 MQTT_SERVER: "ws://localhost:3002"
 ```
+
+## Comparing Model Performance
+
+In the [project wirte-up](./WRITEUP.md), I compared  the performance of a model with and without the use of the OpenVINO™ Toolkit (accuracy, size, speed, CPU overhead).
+
+To compare model speed, run [comparing_model_performance.py](./comparing_model_performance.py).
+
+You will modify the constents as you want and convert the model to IR.
+
+for example
+
+```
+VIDEO_PATH = "./resources/Pedestrian_Detect_2_1_1.mp4"
+MODEL_NAME = 'ssd_inception_v2_coco_2018_01_28'
+MODEL_FILE = MODEL_NAME + '.tar.gz'
+DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
+PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
+```
+
+Run the code
+
+```
+python comparing_model_performance.py
+```
